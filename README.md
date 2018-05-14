@@ -1,4 +1,4 @@
-# Smart Gardening Team 2 (pflanzen2)
+# Smart Gardening Team 2 (pflanzen2)[6~
 ## Massimo Krause, Lukas Römer, Dorian Grosch
 
 Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
@@ -13,3 +13,9 @@ Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
 * **3 x** Helligkeitssensor
 * **3 x** Batterie-Modul
 * **1 x** 802.15.4-Dongle für RasPi
+
+### Interne Kooperation
+
+Github: https://github.com/fu-ilab-swp18/pflanzen2
+Trello: https://trello.com/b/Fg7hORTF/pflanzen2
+ShareLatex: https://de.sharelatex.com/9872211863bkkbstwzxffy
