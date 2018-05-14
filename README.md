@@ -17,5 +17,7 @@ Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
 ### Interne Kooperation
 
 Github: https://github.com/fu-ilab-swp18/pflanzen2
+
 Trello: https://trello.com/b/Fg7hORTF/pflanzen2
+
 ShareLatex: https://de.sharelatex.com/9872211863bkkbstwzxffy
