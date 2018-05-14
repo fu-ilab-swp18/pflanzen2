@@ -7,11 +7,11 @@ Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
 
 * **4 x** Atmel SAM R21 Xplained Pro 
 * **1 x** Raspberry Pi als Gateway
-* **6 x** Feuchtigkeitssensor
-* **3 x** Temperatursensor
-* **3 x** pH-Wert-Sensor
-* **3 x** Helligkeitssensor
-* **3 x** Batterie-Modul
+* **8 x** Feuchtigkeitssensor
+* **4 x** Temperatursensor
+* **4 x** pH-Wert-Sensor
+* **4 x** Helligkeitssensor
+* **4 x** Batterie-Modul
 * **1 x** 802.15.4-Dongle für RasPi
 
 ### Interne Kooperation
