@@ -12,3 +12,4 @@ Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
 * **3 x** pH-Wert-Sensor
 * **3 x** Helligkeitssensor
 * **3 x** Batterie-Modul
+* **1 x** 802.15.4-Dongle für RasPi
