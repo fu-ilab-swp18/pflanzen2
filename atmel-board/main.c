@@ -38,15 +38,13 @@
 #include "net/gnrc.h"
 #endif
 
-int main(void)
-{
-#ifdef MODULE_NETIF
-    gnrc_netreg_entry_t dump = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
-                                                          gnrc_pktdump_pid);
-    gnrc_netreg_register(GNRC_NETTYPE_UNDEF, &dump);
-#endif
+char led_blink_thread_stack[THREAD_STACKSIZE_MAIN];
 
-    (void) puts("Welcome to RIOT!");
+void * led_blink_thread(void * arg)
+{
+    
+    (void) arg;
+    msg_t m;
 
     saul_reg_t * led = saul_reg_find_nth(0);
     
@@ -70,6 +68,30 @@ int main(void)
         xtimer_sleep(1);
 
     }
+
+    return NULL;
+}
+
+int main(void)
+{
+#ifdef MODULE_NETIF
+    gnrc_netreg_entry_t dump = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
+                                                          gnrc_pktdump_pid);
+    gnrc_netreg_register(GNRC_NETTYPE_UNDEF, &dump);
+#endif
+
+    (void) puts("Welcome to RIOT!");
+
+    // start thread for led blinking
+    thread_create(led_blink_thread_stack, sizeof(led_blink_thread_stack),
+                  THREAD_PRIORITY_MAIN - 1, THREAD_CREATE_STACKTEST,
+                  led_blink_thread, NULL, "led_blink_thread");
+
+    /*
+    saul_reg_t * radio = saul_reg_find_name("AT86RF233");
+
+    printf("Name: %s\r\n", radio->name);
+    */
 
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
