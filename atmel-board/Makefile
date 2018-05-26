@@ -4,6 +4,9 @@ APPLICATION = atmel
 # If no BOARD is found in the environment, use this default:
 BOARD ?= samr21-xpro
 
+# If no PORT is found in the environment, use this default:
+PORT ?= /dev/ttyACM3
+
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../RIOT/
 
