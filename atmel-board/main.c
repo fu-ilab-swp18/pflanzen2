@@ -29,6 +29,10 @@
 #include "shell.h"
 #include "shell_commands.h"
 
+#include "xtimer.h"
+#include "saul_reg.h"
+#include "phydat.h"
+
 #ifdef MODULE_NETIF
 #include "net/gnrc/pktdump.h"
 #include "net/gnrc.h"
@@ -43,6 +47,29 @@ int main(void)
 #endif
 
     (void) puts("Welcome to RIOT!");
+
+    saul_reg_t * led = saul_reg_find_nth(0);
+    
+    phydat_t data;
+
+    data.val[0] = 1;
+    data.val[1] = 1;
+    data.val[2] = 1;
+
+    data.unit    = UNIT_UNDEF;
+    data.scale   = 0;
+
+    while(1) {
+        
+        data.val[0] = !data.val[0];
+        data.val[1] = !data.val[1];
+        data.val[2] = !data.val[2];
+         
+        saul_reg_write(led, &data);
+        
+        xtimer_sleep(1);
+
+    }
 
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
