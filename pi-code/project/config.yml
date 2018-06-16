@@ -1,0 +1,7 @@
+mapping:
+    -   boxID:      1
+        address:    fe80::7b68:2644:3053:30fa%lowpan0
+        name:       sepp
+    -   boxID:      2
+        address:    0x124
+        name:       hans
