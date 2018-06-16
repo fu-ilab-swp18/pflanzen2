@@ -21,3 +21,11 @@ Github: https://github.com/fu-ilab-swp18/pflanzen2
 Trello: https://trello.com/b/Fg7hORTF/pflanzen2
 
 ShareLatex: https://de.sharelatex.com/9872211863bkkbstwzxffy
+
+## OpenSenseMap
+
+Test MQTT Server: broker.hivemq.com:1883
+Topic(s): SWP_IK_PFL2/data/[boxID1,boxID2]/[sensorID1,sensorID2,..]
+Message Ex.: [{"sensor":"5b14eda64cd32e00195ec2cc","value":"45.0"}]
+
+
