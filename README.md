@@ -22,10 +22,49 @@ Trello: https://trello.com/b/Fg7hORTF/pflanzen2
 
 ShareLatex: https://de.sharelatex.com/9872211863bkkbstwzxffy
 
-## OpenSenseMap
+### OpenSenseMap
 
 Test MQTT Server: broker.hivemq.com:1883
 Topic(s): SWP_IK_PFL2/data/[boxID1,boxID2]/[sensorID1,sensorID2,..]
 Message Ex.: [{"sensor":"5b14eda64cd32e00195ec2cc","value":"45.0"}]
 
 
+### 802.15.4 6LoWPAN communication protocol proposal
+
+- A message is considered as delivered successfully if the receiver acknowledges the call
+- otherwise the sender will retry to deliver the message after a specified timeout
+- a max number of retry attempts also has to be specified
+- each sensor type gets assigned a fixed number (humidity=1, ...)
+- using yaml as markup language with the following structure:
+    - request:
+    ```yaml
+        msgID:  120936
+        data:
+            -   type:   1
+                value:  54.3
+            -   type:   2
+                value:  36
+    ```
+    - response:
+    ```yaml
+        msgID:  120936
+        ack:    1
+    ```
+- in order to integrate a new node into the network, the user needs to create a new entry in the pi's config yaml
+- the next sensor node that sends an integration request will be considered as the valid candidate
+    - integration request:
+    ```yaml
+        msgID:  893024
+        intReq: true
+    ```
+    - response:
+    ```yaml
+        msgID:  893024
+        ack:    1
+        nodeID: 89
+    ```
+    - sensor node ack:
+    ```yaml
+        msgID:  893024
+        ack:    1
+    ```
