@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "356536925146",
+    "firebase_url": "https://pflanzen2-641bc.firebaseio.com",
+    "project_id": "pflanzen2-641bc",
+    "storage_bucket": "pflanzen2-641bc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356536925146:android:10cdc3e176363fb0",
+        "android_client_info": {
+          "package_name": "fuberlin.pflanzen2.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356536925146-66iq4kvimraun63s5tarpb3f9s8j63q5.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "356536925146-66iq4kvimraun63s5tarpb3f9s8j63q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF5tRWLDIPjU3E4HXHkwW6fLeMNZFoqgs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
