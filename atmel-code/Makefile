@@ -100,3 +100,4 @@ endif
 
 USEMODULE += dht
 # USEMODULE += auto_init
+USEMODULE += periph_adc

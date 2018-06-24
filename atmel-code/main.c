@@ -13,6 +13,7 @@
 #include "fmt.h"
 #include "dht.h"
 #include "dht_params.h"
+#include "periph/adc.h"
 
 #ifdef MODULE_NETIF
 #include "net/gnrc/pktdump.h"
@@ -31,8 +32,12 @@
 
 /* SENSOR DEFINITIONS */
 
+// DHT11 temperature & air humidity sensor
 #define DHT_PIN_PORT 1
 #define DHT_PIN_NUM 23
+
+// DFRobot ground moisture sensor
+#define DFR_LINE_NO 0   // corresponds to pin PA06
 
 /* OTHER DEFINITIONS */
 
@@ -41,9 +46,11 @@
 /* GLOBAL VARIABLES */
 
 dht_t DHT_SENSOR;
+adc_t DFR_LINE;
 
 /* type 1 -> temperature
  * type 2 -> air humidity
+ * type 3 -> ground humidity
  */
 char * YAML_MSG_TEMPLATE =
 "\
@@ -53,15 +60,19 @@ data:\n\
       value: %s\n\
     - type: 2\n\
       value: %s\n\
+    - type: 3\n\
+      value: %s\n\
 ";
 
 /* SENSOR VALUES */
 
 int16_t air_temp;
 int16_t air_hum;
-
 char air_temp_s[10];
 char air_hum_s[10];
+
+int ground_hum;
+char ground_hum_s[10];
 
 /* FUNCTION DEFINITIONS */
 
@@ -119,29 +130,57 @@ int init_dht11(void) {
 
 }
 
-void read_dht11(void) {
+int read_dht11(void) {
     
     // read air_temp and humidity
 
     if (dht_read(&DHT_SENSOR, &air_temp, &air_hum) != DHT_OK) {
 
         puts("Error reading values");
+        return -1;
         
-    } else {
-        
-        size_t n;
-        
-        n = fmt_s16_dfp(air_temp_s, air_temp, -1);
-        air_temp_s[n] = '\0';
-
-        n = fmt_s16_dfp(air_hum_s, air_hum, -1);
-        air_hum_s[n] = '\0';
-
-        printf("DHT values - air_temp: %s°C - relative humidity: %s%%\n",
-                air_temp_s, air_hum_s);
-
     }
+        
+    size_t n;
+    
+    n = fmt_s16_dfp(air_temp_s, air_temp, -1);
+    air_temp_s[n] = '\0';
 
+    n = fmt_s16_dfp(air_hum_s, air_hum, -1);
+    air_hum_s[n] = '\0';
+
+    printf("DHT values - air_temp: %s°C - air_hum: %s%%\n",
+            air_temp_s, air_hum_s);
+
+    return 0;
+
+}
+
+int init_dfr(void) {
+
+    DFR_LINE = DFR_LINE_NO;
+
+    return adc_init(DFR_LINE);
+}
+
+int read_dfr(void) {
+
+    /* the sensor value description
+     * 0  ~300     dry soil
+     * 300~700     humid soil
+     * 700~950     in water
+     */
+
+    ground_hum = adc_sample(DFR_LINE, ADC_RES_10BIT);
+    
+    float ground_hum_perc = ground_hum / 1023.0f * 100.0f;
+
+    int n = fmt_float(ground_hum_s, ground_hum_perc, 1);
+    ground_hum_s[n] = '\0';
+
+    printf("DFR value - ground_hum: %s%%\n", ground_hum_s);
+
+    return 0;
 }
 
 int main(void) {
@@ -162,6 +201,7 @@ int main(void) {
     /* init sensors */
     
     init_dht11();
+    init_dfr();
 
     /* init prng */
 
@@ -175,6 +215,8 @@ int main(void) {
         
         read_dht11();
 
+        read_dfr();
+
         /* build yaml message */
 
         // generate message ID
@@ -183,7 +225,7 @@ int main(void) {
         char yaml_msg[MAX_MSG_LEN];
 
         // put the values in the template
-        sprintf(yaml_msg, YAML_MSG_TEMPLATE, message_id, air_temp_s, air_hum_s);
+        sprintf(yaml_msg, YAML_MSG_TEMPLATE, message_id, air_temp_s, air_hum_s, ground_hum_s);
 
         printf("%s\n", yaml_msg);
 
@@ -200,7 +242,7 @@ int main(void) {
 
     }
 
-    /* code after never executes */
+    /* code after this never executes */
 
     /* INTERACTIVE PROMPT */
 
