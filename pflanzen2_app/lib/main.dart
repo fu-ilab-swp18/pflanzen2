@@ -4,7 +4,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:async';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:observable/observable.dart' as observable;
-import 'mqtt_test.dart';
+
+import 'dart:io';
+import 'package:args/args.dart';
+import 'package:mqtt/mqtt_shared.dart';
+import 'package:mqtt/mqtt_connection_io_socket.dart';
 
 
 
@@ -18,7 +22,7 @@ void main() {
 class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
-        return MaterialApp(
+        return new MaterialApp(
             home: new DefaultTabController(
                 initialIndex: 0,
                 length: 2,
@@ -57,49 +61,28 @@ class _SensorListState extends State{
     @override
     void initState() {
         // runMqtt();
-        setUpMqtt();
+        // setUpMqtt();
+        setMQTT2();
     }
 
-    Future<int> setUpMqtt () async {
-        print('test');
-        final mqtt.MqttClient client = new mqtt.MqttClient("ws://test.mosquitto.org", "jlf8973hfgo54hg49g3");
-        client.useWebSocket = true;
-        client.port = 8080;
-        client.logging(true);
+    void setMQTT2() {
+        var mqttCnx = new MqttConnectionIOSocket.setOptions(host: "broker.hivemq.com", port: 1883);
+        MqttClient c = new MqttClient(mqttCnx, clientID: "MyClientID", qos: QOS_1);
+        // c.setWill("MyWillTopic", "MyWillPayload");
 
-        try {
-            final mqtt.MqttConnectMessage connMess = new mqtt.MqttConnectMessage()
-                .withClientIdentifier("jlf8973hfgo54hg49g3")
-                .keepAliveFor(30) // Must agree with the keep alive set above
-                .withWillTopic("willtopic")
-                .withWillQos(mqtt.MqttQos.atLeastOnce);
-            client.connectionMessage = connMess;
-
-            await client.connect();
-
-            if (client.connectionState == mqtt.ConnectionState.connected) {
-                print("EXAMPLE::Mosquitto client connected");
-            } else {
-                print(
-                    "EXAMPLE::ERROR Mosquitto client connection failed - disconnecting, state is ${client
-                        .connectionState}");
-                client.disconnect();
-            }
-
-            final String topic = "test/hw";
-            final observable.ChangeNotifier<observable.ChangeRecord> cn = client.listenTo(topic, mqtt.MqttQos.atMostOnce);
-            print('START LISTENING 2');
-
-            cn.changes.listen((List<observable.ChangeRecord> c) {
-                print('RECEIVED SOMETHING!');
-                // final mqtt.MqttPublishMessage recMess = c[0].payload as mqtt.MqttPublishMessage;
-                // final String pt =
-                // mqtt.MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-                // print("EXAMPLE::Change notification:: payload is <$pt> for topic <$topic>");
-            });
-        }catch(e) {
-            print(e.toString());
-        }
+        c.connect(() {
+                print("Disconnected!");
+            })
+            .then( (c) {
+                MqttClient<MqttConnectionIOSocket> client = c as MqttClient<MqttConnectionIOSocket>;
+                client.subscribe('test/hw', 1, (t, d) {
+                    print("[$t] $d");
+                })
+                .then( (s) => print("Subscription done - ID: ${s.messageID} - Qos: ${s.grantedQoS}"));
+            })
+            .catchError((e) => print("Error: $e"), test: (e) => e is SocketException)  
+            .catchError((mqttErr) => print("Error: $mqttErr")
+        );
     }
 
     @override

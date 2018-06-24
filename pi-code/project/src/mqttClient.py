@@ -51,8 +51,6 @@ def mqttWorker(mqttQ):
         requestYaml = request[0]
         ipAddress = request[1][0]
         boxName = config.getBoxName(ipAddress)
-        print ipAddress
-
         mqttMessage = []
         for sensor in requestYaml['data']:
             mqttSensor = {}

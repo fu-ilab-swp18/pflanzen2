@@ -1,6 +1,6 @@
 mapping:
     -   boxID:      1
-        address:    fe80::7b68:2644:3053:30fa%lowpan0
+        address:    fe80::7b79:4544:9e9c:1422%lowpan0
         name:       sepp
         sensors:
             -   type:   1
