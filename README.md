@@ -46,6 +46,14 @@ Sonst kompiliert es nicht.
 ### DHT11 temperature & air humidity sensor:
 * Data      -> PB23
 
+## Sensors IDs
+
+| Sensor | ID |
+| --- | --- |
+| Temp | 1 |
+| Air hum | 2 |
+| Ground hum | 3 |
+
 ## IP Adresses
 
 | Device | Adddress |
