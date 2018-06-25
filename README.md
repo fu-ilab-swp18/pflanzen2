@@ -46,6 +46,8 @@ Sonst kompiliert es nicht.
 ### DHT11 temperature & air humidity sensor:
 * Data      -> PB23
 
+![wiring][data/wiring.jpg]
+
 ## Sensors IDs
 
 | Sensor | ID |
