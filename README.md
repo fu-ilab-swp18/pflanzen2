@@ -38,10 +38,10 @@ Sonst kompiliert es nicht.
 
 ## Wiring
 
-DFR ground humidity sensor:
-    * Gold      -> GND
-    * Schwarz   -> VCC
-    * Weiß      -> PA06
+### DFR ground humidity sensor:
+* Gold      -> GND
+* Schwarz   -> VCC
+* Weiß      -> PA06
 
-DHT11 temperature & air humidity sensor:
-    * Data      -> PB23
+### DHT11 temperature & air humidity sensor:
+* Data      -> PB23
