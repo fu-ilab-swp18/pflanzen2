@@ -25,9 +25,9 @@
 /* NODE DEFINITIONS */
 
 #define NODEID 1
-#define WAKEUP_INTERVAL_IN_S 10 // 10 seconds
+#define WAKEUP_INTERVAL_IN_S 5 // 5 seconds
 
-#define RPI_ADDR "fe80::ff:fe00:30fa"
+#define RPI_ADDR "fe80::1ac0:ffee:1ac0:ffee"
 #define RPI_UDP_PORT 1234
 
 /* SENSOR DEFINITIONS */
@@ -231,9 +231,7 @@ int main(void) {
 
         /* send udp packet with constructed message */
 
-        char addr[] = RPI_ADDR;
-
-        udp_send(addr, RPI_UDP_PORT, yaml_msg);
+        udp_send(RPI_ADDR, RPI_UDP_PORT, yaml_msg);
 
         /* go to sleep for the specified time
          * (implemented here as normal sleep) */
