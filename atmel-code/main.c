@@ -210,7 +210,9 @@ int main(void) {
     /* main loop */
 
     while(1) {
-    
+
+        printf("\n");
+        
         /* read sensors */
         
         read_dht11();
@@ -227,7 +229,7 @@ int main(void) {
         // put the values in the template
         sprintf(yaml_msg, YAML_MSG_TEMPLATE, message_id, air_temp_s, air_hum_s, ground_hum_s);
 
-        printf("%s\n", yaml_msg);
+        printf("\n%s\n", yaml_msg);
 
         /* send udp packet with constructed message */
 
