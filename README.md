@@ -45,3 +45,9 @@ Sonst kompiliert es nicht.
 
 ### DHT11 temperature & air humidity sensor:
 * Data      -> PB23
+
+## IP Adresses
+
+| Device | Adddress |
+| RPI | fe80::1ac0:ffee:1ac0:ffee |
+| Atmel 1 | fe80::7b68:2644:3053:30fa |
