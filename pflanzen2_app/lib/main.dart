@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 import 'mainappview.dart';
 import 'sensorlistview.dart';
 
 
-FirebaseMessaging _firebaseMessaging;
+
 
 void main() {
-    _firebaseMessaging = new FirebaseMessaging();
-    _firebaseMessaging.requestNotificationPermissions();
-    
-    _firebaseMessaging.subscribeToTopic("sepp");
-
     runApp(new MyApp());
 }
 

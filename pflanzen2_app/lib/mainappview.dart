@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'mqtt.dart';
-import 'sensorlistview.dart';
 
-
-class AppState{
-
-}
 
 class MainAppContainer extends StatefulWidget {
-    final AppState state;
     final Widget child;
 
     MainAppContainer({
         @required this.child,
-        this.state,
     });
 
     static _MainAppContainerState of(BuildContext context) {
@@ -33,6 +28,8 @@ class MainAppContainer extends StatefulWidget {
 class _MainAppContainerState extends State<MainAppContainer> {
     MqttComponent m;
     List<String> boxList = [];
+    Map<String, bool> subs = {};
+    FirebaseMessaging firebaseMessaging;
     
     @override
     void initState() {
@@ -44,9 +41,27 @@ class _MainAppContainerState extends State<MainAppContainer> {
 
         m.onBoxListChange.listen((event) {
             setState(() {
-                boxList = event.boxList;          
+                boxList = event.boxList;
+            });
+
+            SharedPreferences.getInstance().then((prefs) {
+                boxList.forEach((box) {
+                    bool boxSub = prefs.getBool(box);
+                    if(boxSub == null) {
+                        prefs.setBool(box, false);
+                        subs[box] = false;
+                    } else {
+                        subs[box] = boxSub;
+                        if(boxSub == true) {
+                            firebaseMessaging.subscribeToTopic(box);
+                        }
+                    }
+                });
             });
         });
+
+        firebaseMessaging = new FirebaseMessaging();
+        firebaseMessaging.requestNotificationPermissions();
 
         super.initState();
     }
@@ -58,27 +73,6 @@ class _MainAppContainerState extends State<MainAppContainer> {
             child: widget.child,
         );
     }
-
-    // @override
-    // Widget build(BuildContext context) {
-    //     return new Scaffold(
-    //         appBar: new AppBar(
-    //             title: new Text('Pflanzen 2'),
-    //             bottom: new TabBar(
-    //                 tabs: <Widget>[
-    //                     new Tab(icon: new Icon(Icons.list, size: 30.0,)),
-    //                     new Tab(icon: new Icon(Icons.star, size: 30.0,)),
-    //                 ],
-    //             )
-    //         ),
-    //         body: new TabBarView(
-    //             children: <Widget>[
-    //                 new SensorList(),
-    //                 new Text("data"),
-    //             ],
-    //         )
-    //     );
-    // }
 }
 
 class _InheritedStateContainer extends InheritedWidget {
@@ -89,8 +83,6 @@ class _InheritedStateContainer extends InheritedWidget {
         @required this.data,
         @required Widget child,
     }) : super(key: key, child: child);
-
-    
 
     @override
     bool updateShouldNotify(_InheritedStateContainer old) => true;

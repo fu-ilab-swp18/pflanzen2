@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'mqtt.dart';
 import 'thresholdview.dart';
 import 'mainappview.dart';
@@ -13,6 +16,22 @@ class SensorList extends StatefulWidget {
 }
 
 class _SensorListState extends State{
+    void updateSub(String box, bool state) {
+        setState(() {
+            MainAppContainer.of(context).subs[box] = state;
+        });
+        SharedPreferences.getInstance().then((prefs) {
+            prefs.setBool(box, state);
+        });
+        print("New State $state");
+        if(state == true) {
+            print("SUBSCRIBE");
+            MainAppContainer.of(context).firebaseMessaging.subscribeToTopic(box);
+        } else {
+            print("UNSUBSCRIBE");
+            MainAppContainer.of(context).firebaseMessaging.unsubscribeFromTopic(box);
+        }
+    }
 
     @override
     void initState() {
@@ -31,6 +50,7 @@ class _SensorListState extends State{
             itemCount: MainAppContainer.of(context).boxList.length,
             itemBuilder: (BuildContext context, int index) {
                 var box = MainAppContainer.of(context).boxList[index];
+                var sub = MainAppContainer.of(context).subs[box];
 
                 return new Card(
                     child: new Column(
@@ -44,8 +64,10 @@ class _SensorListState extends State{
                             child: new ButtonBar(
                                 children: <Widget>[
                                     new Switch(
-                                        value: true,
-                                        onChanged: (bool) {},
+                                        value: sub,
+                                        onChanged: (bool state) {
+                                            updateSub(box, state);
+                                        },
                                     ),
                                     new FlatButton(
                                         child: const Text('VALUES'),
