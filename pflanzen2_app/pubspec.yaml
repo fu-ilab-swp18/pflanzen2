@@ -15,7 +15,7 @@ dependencies:
   firebase_messaging: ^1.0.3
   mqtt: "^1.1.2"
   uuid: "^1.0.0"
-  yaml: "^2.1.14"
+  yaml: "^2.1.13"
   # mqtt_client:
   #   git:
   #     url: https://github.com/benbehringer/mqtt_client.git
