@@ -22,6 +22,9 @@ def getSensors(ip_address, type):
                 if type == sensor['type']:
                     return sensor['id']
 
+def getBoxes():
+    return config['mapping']
+
 def getBoxNames():
     boxNames = []
     for box in config['mapping']:
