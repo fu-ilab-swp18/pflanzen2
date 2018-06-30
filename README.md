@@ -73,3 +73,30 @@ Message Ex.: [{"sensor":"5b14eda64cd32e00195ec2cc","value":"45.0"}]
 cp ../RIOT/drivers/dht/include/dht_params.h ../RIOT/drivers/include/
 
 Sonst kompiliert es nicht.
+
+## Wiring
+
+### DFR ground humidity sensor:
+* Gold      -> GND
+* Schwarz   -> VCC
+* Weiß      -> PA06
+
+### DHT11 temperature & air humidity sensor:
+* Data      -> PB23
+
+![wiring](doc/wiring.jpg)
+
+## Sensors IDs
+
+| Sensor | ID |
+| --- | --- |
+| Temp | 1 |
+| Air hum | 2 |
+| Ground hum | 3 |
+
+## IP Adresses
+
+| Device | Adddress |
+| --- | --- |
+| RPI | fe80::1ac0:ffee:1ac0:ffee |
+| Atmel 1 | fe80::7b68:2644:3053:30fa |
