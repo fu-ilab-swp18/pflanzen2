@@ -68,6 +68,19 @@ class MqttComponent {
     void disconnect() {
         client.disconnect();
     }
+    
+    void sendNewThreshold(String boxname, int type, double min, double max) {
+        client.publish(CONFIG_TOPIC + "/threshold", """
+            responseTopic: $clientID,
+            boxname: $boxname
+            type: $type
+            min: $min
+            max: $max
+        """, QOS_1)
+        .then((m) {
+            print("publish successfull!");
+        });
+    }
 
     void getBoxList() {
         client.publish(CONFIG_TOPIC + "/boxnames", """
