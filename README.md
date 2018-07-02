@@ -2,6 +2,7 @@
 ## Massimo Krause, Lukas Römer, Dorian Grosch
 
 Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
+
 Präsentation Release Candidate: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4sentation_Release_Candidate.pdf
 
 ### Benötigte Hardware
