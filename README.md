@@ -38,6 +38,24 @@ cp ../RIOT/drivers/dht/include/dht_params.h ../RIOT/drivers/include/
 
 Sonst kompiliert es nicht.
 
+## MQTT Setup
+
+Damit das Projekt kompiliert, muss die Datei RIOT/core/include/thread_flags.h bearbeitet werden:
+
+Die Zeile
+
+```#define MODULE_CORE_THREAD_FLAGS```
+
+muss vor dem Block
+
+```
+#ifndef MODULE_CORE_THREAD_FLAGS
+#error Missing USEMODULE += core_thread_flags
+#endif
+```
+
+eingefügt werden.
+
 ## Wiring
 
 ### DFR ground humidity sensor:
@@ -46,7 +64,7 @@ Sonst kompiliert es nicht.
 * Weiß      -> PA06
 
 ### DHT11 temperature & air humidity sensor:
-* Data      -> PB23
+* Data      -> PA07
 
 ![wiring](doc/wiring.jpg)
 

@@ -37,6 +37,7 @@ QUIET ?= 1
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
+
 # include and auto-initialize all available sensors
 USEMODULE += saul_default
 
@@ -99,5 +100,6 @@ else
 endif
 
 USEMODULE += dht
-# USEMODULE += auto_init
 USEMODULE += periph_adc
+USEMODULE += core_thread_flags
+USEMODULE += emcute

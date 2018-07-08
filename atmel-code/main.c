@@ -21,6 +21,7 @@
 #endif
 
 #include "udp.h"
+#include "mqtt_client.h"
 
 /* NODE DEFINITIONS */
 
@@ -30,11 +31,13 @@
 #define RPI_ADDR "fe80::1ac0:ffee:1ac0:ffee"
 #define RPI_UDP_PORT 1234
 
+#define MQTT_PORT "1883"
+
 /* SENSOR DEFINITIONS */
 
 // DHT11 temperature & air humidity sensor
-#define DHT_PIN_PORT 1
-#define DHT_PIN_NUM 23
+#define DHT_PIN_PORT 0
+#define DHT_PIN_NUM 7
 
 // DFRobot ground moisture sensor
 #define DFR_LINE_NO 0   // corresponds to pin PA06
@@ -112,7 +115,7 @@ int init_dht11(void) {
     
     // initialize dht sensor
 
-    DHT_SENSOR.type = DHT11;
+    DHT_SENSOR.type = (DHT11);
 
     dht_params_t dht_params;
     dht_params.pin = GPIO_PIN(DHT_PIN_PORT, DHT_PIN_NUM);
@@ -124,7 +127,7 @@ int init_dht11(void) {
         puts("ok!\n");
         return 0;
     } else {
-        puts("failed.\n");
+        puts("failed!\n");
         return -1;
     }
 
@@ -160,7 +163,16 @@ int init_dfr(void) {
 
     DFR_LINE = DFR_LINE_NO;
 
-    return adc_init(DFR_LINE);
+    printf("Initializing DFR sensor...\t");
+    
+    if(adc_init(DFR_LINE) == -1) {
+        puts("failed!\n");
+        return 1;
+    } else {
+        puts("ok!\n");
+        return 0;
+    }
+
 }
 
 int read_dfr(void) {
@@ -181,6 +193,21 @@ int read_dfr(void) {
     printf("DFR value - ground_hum: %s%%\n", ground_hum_s);
 
     return 0;
+}
+
+int mqtt_init_conn(void) {
+   
+   mqtt_client_init();
+
+    char * mqtt_connect_opt[] = {
+        "",
+        RPI_ADDR,
+        MQTT_PORT,
+    };
+
+    printf("Connecting to MQTT Broker.. \n");
+
+    cmd_con(3, mqtt_connect_opt);
 }
 
 int main(void) {
@@ -207,6 +234,10 @@ int main(void) {
 
     random_init((uint32_t) xtimer_now().ticks32);
 
+    /* init mqtt client */
+
+    mqtt_init_conn();
+
     /* main loop */
 
     while(1) {
@@ -215,9 +246,12 @@ int main(void) {
         
         /* read sensors */
         
+        // printf("Entering dht11\n");
         read_dht11();
-
+        // printf("Exiting dht11\n");
+        // printf("Entering dfr\n");
         read_dfr();
+        // printf("Exiting dfr\n");
 
         /* build yaml message */
 
