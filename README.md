@@ -100,3 +100,15 @@ Sonst kompiliert es nicht.
 | --- | --- |
 | RPI | fe80::1ac0:ffee:1ac0:ffee |
 | Atmel 1 | fe80::7b68:2644:3053:30fa |
+
+## RPL init
+to speak with two boards do: make list-ttys
+this will give you an overview from all your connected boards and ther serials.
+to load the code to a specific board do: BOARD=samr21-xpro SERIAL="yourSerial" make flash all term 
+
+
+## RPL testing
+to trace a package in rpl-network use: nib route
+to send a udp package from a node to the root node via 6lowpan and look at the details do the following:
+root: udp server start 8888
+node: udp send 2001:db8::1 8888 yourtext
