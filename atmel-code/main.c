@@ -16,18 +16,24 @@
 
 #include "udp.h"
 #include "mqtt_client.h"
+#include "rpl_node.h"
 
 /* NODE DEFINITIONS */
 
 #define NODE_NAME "sepp"
-
-#define WAKEUP_INTERVAL_IN_S 5 // 5 seconds
-
+#define WAKEUP_INTERVAL_IN_S 5
 #define RPI_ADDR "fe80::1ac0:ffee:1ac0:ffee"
+
+/* MQTT DEFINITIONS */
 
 #define MQTT_PORT "1885"
 #define MQTT_TOPIC_NAME "data"
 #define MQTT_QOS_LEVEL "1"
+
+/* RPL DEFINITIONS */
+
+#define RPL_NODE_MODE "std"     // valid options are "std" and "root"
+#define RPL_IFACE_NO "6"
 
 /* SENSOR DEFINITIONS */
 
@@ -195,11 +201,7 @@ int mqtt_init_conn(void) {
    
    mqtt_client_init();
 
-    char * mqtt_connect_opt[] = {
-        "",
-        RPI_ADDR,
-        MQTT_PORT,
-    };
+    char * mqtt_connect_opt[] = {"con", RPI_ADDR, MQTT_PORT };
 
     printf("Connecting to MQTT broker.. \n");
 
@@ -228,6 +230,10 @@ int main(void) {
     /* init prng */
 
     random_init((uint32_t) xtimer_now().ticks32);
+
+    /* init RPL */
+
+    init_rpl_node(RPL_NODE_MODE, RPL_IFACE_NO);
 
     /* init mqtt client */
 
@@ -258,12 +264,7 @@ int main(void) {
 
         /* publish the constructed message via mqtt */
 
-        char * mqtt_publish_opt[] = {
-            "",
-            MQTT_TOPIC_NAME,
-            yaml_msg,
-            MQTT_QOS_LEVEL
-        };
+        char * mqtt_publish_opt[] = {"pub", MQTT_TOPIC_NAME, yaml_msg, MQTT_QOS_LEVEL };
 
         cmd_pub(4, mqtt_publish_opt);
 

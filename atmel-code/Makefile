@@ -26,7 +26,11 @@ USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
 USEMODULE += gnrc_sock_udp
+USEMODULE += gnrc_udp
 USEMODULE += gnrc_ipv6_router_default
+# Add a routing protocol
+USEMODULE += gnrc_rpl
+USEMODULE += auto_init_gnrc_rpl
 # Include MQTT-SN
 USEMODULE += emcute
 # Add also the shell, some shell commands
@@ -35,12 +39,24 @@ USEMODULE += shell_commands
 USEMODULE += ps
 # For testing we also include the ping6 command and some stats
 USEMODULE += gnrc_icmpv6_echo
+# netstat
+USEMODULE += netstats_l2
+USEMODULE += netstats_ipv6
+USEMODULE += netstats_rpl
 
 USEMODULE += random
 USEMODULE += dht
 USEMODULE += periph_adc
 
 USEMODULE += saul_default
+
+# Set a custom 802.15.4 channel if needed
+DEFAULT_CHANNEL ?= 26
+CFLAGS += -DDEFAULT_CHANNEL=$(DEFAULT_CHANNEL)
+
+CFLAGS += -DGNRC_RPL_LIFETIME_UNIT=1 -DGNRC_RPL_DEFAULT_LIFETIME=32
+CFLAGS += -DGNRC_RPL_REGULAR_DAO_INTERVAL=13
+CFLAGS += -DGNRC_RPL_DEFAULT_DIO_INTERVAL_DOUBLINGS=13
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
