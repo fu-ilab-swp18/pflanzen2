@@ -28,7 +28,7 @@
 #include "net/emcute.h"
 #include "net/ipv6/addr.h"
 
-#define EMCUTE_PORT         (1883U)
+#define EMCUTE_PORT         (1885U)
 #define EMCUTE_ID           ("pflanzen2_mqtt")
 #define EMCUTE_PRIO         (THREAD_PRIORITY_MAIN - 1)
 
@@ -141,7 +141,7 @@ int cmd_pub(int argc, char **argv)
         flags |= get_qos(argv[3]);
     }
 
-    printf("pub with topic: %s and name %s and flags 0x%02x\n", argv[1], argv[2], (int)flags);
+    //printf("pub with topic: %s and name %s and flags 0x%02x\n", argv[1], argv[2], (int)flags);
 
     /* step 1: get topic id */
     t.name = argv[1];

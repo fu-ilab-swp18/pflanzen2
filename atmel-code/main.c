@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "thread.h"
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -15,23 +14,20 @@
 #include "dht_params.h"
 #include "periph/adc.h"
 
-#ifdef MODULE_NETIF
-#include "net/gnrc/pktdump.h"
-#include "net/gnrc.h"
-#endif
-
 #include "udp.h"
 #include "mqtt_client.h"
 
 /* NODE DEFINITIONS */
 
-#define NODEID 1
+#define NODE_NAME "sepp"
+
 #define WAKEUP_INTERVAL_IN_S 5 // 5 seconds
 
 #define RPI_ADDR "fe80::1ac0:ffee:1ac0:ffee"
-#define RPI_UDP_PORT 1234
 
-#define MQTT_PORT "1883"
+#define MQTT_PORT "1885"
+#define MQTT_TOPIC_NAME "data"
+#define MQTT_QOS_LEVEL "1"
 
 /* SENSOR DEFINITIONS */
 
@@ -57,6 +53,7 @@ adc_t DFR_LINE;
  */
 char * YAML_MSG_TEMPLATE =
 "\
+name: %s\n\
 msgID: %d\n\
 data:\n\
     - type: 1\n\
@@ -138,7 +135,6 @@ int read_dht11(void) {
     // read air_temp and humidity
 
     if (dht_read(&DHT_SENSOR, &air_temp, &air_hum) != DHT_OK) {
-
         puts("Error reading values");
         return -1;
         
@@ -205,18 +201,17 @@ int mqtt_init_conn(void) {
         MQTT_PORT,
     };
 
-    printf("Connecting to MQTT Broker.. \n");
+    printf("Connecting to MQTT broker.. \n");
 
-    cmd_con(3, mqtt_connect_opt);
+    if (cmd_con(3, mqtt_connect_opt) == 1) {
+        // conn failed
+        return 1;
+    }
+
+    return 0;
 }
 
 int main(void) {
-
-#ifdef MODULE_NETIF
-    gnrc_netreg_entry_t dump = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
-                                                          gnrc_pktdump_pid);
-    gnrc_netreg_register(GNRC_NETTYPE_UNDEF, &dump);
-#endif
 
     (void) puts("Welcome to RIOT!");
 
@@ -246,12 +241,8 @@ int main(void) {
         
         /* read sensors */
         
-        // printf("Entering dht11\n");
         read_dht11();
-        // printf("Exiting dht11\n");
-        // printf("Entering dfr\n");
         read_dfr();
-        // printf("Exiting dfr\n");
 
         /* build yaml message */
 
@@ -261,13 +252,20 @@ int main(void) {
         char yaml_msg[MAX_MSG_LEN];
 
         // put the values in the template
-        sprintf(yaml_msg, YAML_MSG_TEMPLATE, message_id, air_temp_s, air_hum_s, ground_hum_s);
+        sprintf(yaml_msg, YAML_MSG_TEMPLATE, NODE_NAME, message_id, air_temp_s, air_hum_s, ground_hum_s);
 
         printf("\n%s\n", yaml_msg);
 
-        /* send udp packet with constructed message */
+        /* publish the constructed message via mqtt */
 
-        udp_send(RPI_ADDR, RPI_UDP_PORT, yaml_msg);
+        char * mqtt_publish_opt[] = {
+            "",
+            MQTT_TOPIC_NAME,
+            yaml_msg,
+            MQTT_QOS_LEVEL
+        };
+
+        cmd_pub(4, mqtt_publish_opt);
 
         /* go to sleep for the specified time
          * (implemented here as normal sleep) */
