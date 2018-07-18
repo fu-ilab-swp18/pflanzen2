@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "thread.h"
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -15,26 +14,32 @@
 #include "dht_params.h"
 #include "periph/adc.h"
 
-#ifdef MODULE_NETIF
-#include "net/gnrc/pktdump.h"
-#include "net/gnrc.h"
-#endif
-
 #include "udp.h"
+#include "mqtt_client.h"
+#include "rpl_node.h"
 
 /* NODE DEFINITIONS */
 
-#define NODEID 1
-#define WAKEUP_INTERVAL_IN_S 5 // 5 seconds
-
+#define NODE_NAME "sepp"
+#define WAKEUP_INTERVAL_IN_S 5
 #define RPI_ADDR "fe80::1ac0:ffee:1ac0:ffee"
-#define RPI_UDP_PORT 1234
+
+/* MQTT DEFINITIONS */
+
+#define MQTT_PORT "1885"
+#define MQTT_TOPIC_NAME "data"
+#define MQTT_QOS_LEVEL "1"
+
+/* RPL DEFINITIONS */
+
+#define RPL_NODE_MODE "std"     // valid options are "std" and "root"
+#define RPL_IFACE_NO "6"
 
 /* SENSOR DEFINITIONS */
 
 // DHT11 temperature & air humidity sensor
-#define DHT_PIN_PORT 1
-#define DHT_PIN_NUM 23
+#define DHT_PIN_PORT 0
+#define DHT_PIN_NUM 7
 
 // DFRobot ground moisture sensor
 #define DFR_LINE_NO 0   // corresponds to pin PA06
@@ -54,6 +59,7 @@ adc_t DFR_LINE;
  */
 char * YAML_MSG_TEMPLATE =
 "\
+name: %s\n\
 msgID: %d\n\
 data:\n\
     - type: 1\n\
@@ -112,7 +118,7 @@ int init_dht11(void) {
     
     // initialize dht sensor
 
-    DHT_SENSOR.type = DHT11;
+    DHT_SENSOR.type = (DHT11);
 
     dht_params_t dht_params;
     dht_params.pin = GPIO_PIN(DHT_PIN_PORT, DHT_PIN_NUM);
@@ -124,7 +130,7 @@ int init_dht11(void) {
         puts("ok!\n");
         return 0;
     } else {
-        puts("failed.\n");
+        puts("failed!\n");
         return -1;
     }
 
@@ -135,7 +141,6 @@ int read_dht11(void) {
     // read air_temp and humidity
 
     if (dht_read(&DHT_SENSOR, &air_temp, &air_hum) != DHT_OK) {
-
         puts("Error reading values");
         return -1;
         
@@ -160,7 +165,16 @@ int init_dfr(void) {
 
     DFR_LINE = DFR_LINE_NO;
 
-    return adc_init(DFR_LINE);
+    printf("Initializing DFR sensor...\t");
+    
+    if(adc_init(DFR_LINE) == -1) {
+        puts("failed!\n");
+        return 1;
+    } else {
+        puts("ok!\n");
+        return 0;
+    }
+
 }
 
 int read_dfr(void) {
@@ -183,13 +197,23 @@ int read_dfr(void) {
     return 0;
 }
 
-int main(void) {
+int mqtt_init_conn(void) {
+   
+   mqtt_client_init();
 
-#ifdef MODULE_NETIF
-    gnrc_netreg_entry_t dump = GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
-                                                          gnrc_pktdump_pid);
-    gnrc_netreg_register(GNRC_NETTYPE_UNDEF, &dump);
-#endif
+    char * mqtt_connect_opt[] = {"con", RPI_ADDR, MQTT_PORT };
+
+    printf("Connecting to MQTT broker.. \n");
+
+    if (cmd_con(3, mqtt_connect_opt) == 1) {
+        // conn failed
+        return 1;
+    }
+
+    return 0;
+}
+
+int main(void) {
 
     (void) puts("Welcome to RIOT!");
 
@@ -207,6 +231,14 @@ int main(void) {
 
     random_init((uint32_t) xtimer_now().ticks32);
 
+    /* init RPL */
+
+    init_rpl_node(RPL_NODE_MODE, RPL_IFACE_NO);
+
+    /* init mqtt client */
+
+    mqtt_init_conn();
+
     /* main loop */
 
     while(1) {
@@ -216,7 +248,6 @@ int main(void) {
         /* read sensors */
         
         read_dht11();
-
         read_dfr();
 
         /* build yaml message */
@@ -227,13 +258,15 @@ int main(void) {
         char yaml_msg[MAX_MSG_LEN];
 
         // put the values in the template
-        sprintf(yaml_msg, YAML_MSG_TEMPLATE, message_id, air_temp_s, air_hum_s, ground_hum_s);
+        sprintf(yaml_msg, YAML_MSG_TEMPLATE, NODE_NAME, message_id, air_temp_s, air_hum_s, ground_hum_s);
 
         printf("\n%s\n", yaml_msg);
 
-        /* send udp packet with constructed message */
+        /* publish the constructed message via mqtt */
 
-        udp_send(RPI_ADDR, RPI_UDP_PORT, yaml_msg);
+        char * mqtt_publish_opt[] = {"pub", MQTT_TOPIC_NAME, yaml_msg, MQTT_QOS_LEVEL };
+
+        cmd_pub(4, mqtt_publish_opt);
 
         /* go to sleep for the specified time
          * (implemented here as normal sleep) */

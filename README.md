@@ -3,6 +3,8 @@
 
 Präsentation: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4si.pdf
 
+Präsentation Release Candidate: https://userpage.fu-berlin.de/doriangrosch/Pr%C3%A4sentation_Release_Candidate.pdf
+
 ### Benötigte Hardware
 
 * **4 x** Atmel SAM R21 Xplained Pro 
@@ -82,7 +84,7 @@ Sonst kompiliert es nicht.
 * Weiß      -> PA06
 
 ### DHT11 temperature & air humidity sensor:
-* Data      -> PB23
+* Data      -> PA07
 
 ![wiring](doc/wiring.jpg)
 
@@ -100,3 +102,4 @@ Sonst kompiliert es nicht.
 | --- | --- |
 | RPI | fe80::1ac0:ffee:1ac0:ffee |
 | Atmel 1 | fe80::7b68:2644:3053:30fa |
+| sepp | |
