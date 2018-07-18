@@ -4,20 +4,14 @@ import yaml
 with open("../config.yml", 'r') as ymlfile:
     config = yaml.load(ymlfile)
 
-
-def getBoxID(ip_address):
+def getBoxName(box_id):
     for mapping in config['mapping']:
-        if mapping['address'] == ip_address:
-            return mapping['boxID']
-
-def getBoxName(ip_address):
-    for mapping in config['mapping']:
-        if mapping['address'] == ip_address:
+        if mapping['boxID'] == box_id:
             return mapping['name']
 
-def getSensors(ip_address, type):
+def getSensors(box_id, type):
     for mapping in config['mapping']:
-        if mapping['address'] == ip_address:
+        if mapping['boxID'] == box_id:
             for sensor in mapping['sensors']:
                 if type == sensor['type']:
                     return sensor['id']

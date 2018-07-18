@@ -1,6 +1,5 @@
 mapping:
-    -   boxID:      1
-        address:    fe80::7b76:7c53:33a8:e35e%lowpan0
+    -   boxID:      sepp
         name:       sepp
         sensors:
             -   type:   1
@@ -9,33 +8,29 @@ mapping:
                 id:     5b14eda64cd32e00195ec2cc
             -   type:   3
                 id:     5b14eda64cd32e00195ec2cb
-    -   boxID:      2
-        address:    fe80%lowpan0
+    -   boxID:      hans
         name:       hans
         sensors:
             -   type:   1
                 id:     5b14eda64cd32e00195ec2cc
             -   type:   3
                 id:     5b14eda64cd32e00195ec2ca
-    -   boxID:      3
-        address:    0x124
-        name:       franz
+    -   boxID:      massimo
+        name:       massimo
         sensors:
             -   type:   1
                 id:     5b14eda64cd32e00195ec2cc
             -   type:   3
                 id:     5b14eda64cd32e00195ec2ca
-    -   boxID:      4
-        address:    0x124
+    -   boxID:      dorian
+        name:       dorian
+        sensors:
+            -   type:   1
+                id:     5b14eda64cd32e00195ec2cc
+            -   type:   3
+                id:     5b14eda64cd32e00195ec2ca
+    -   boxID:      lukas
         name:       lukas
-        sensors:
-            -   type:   1
-                id:     5b14eda64cd32e00195ec2cc
-            -   type:   3
-                id:     5b14eda64cd32e00195ec2ca
-    -   boxID:      5
-        address:    0x124
-        name:       peter
         sensors:
             -   type:   1
                 id:     5b14eda64cd32e00195ec2cc

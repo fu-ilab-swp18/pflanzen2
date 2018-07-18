@@ -75,15 +75,14 @@ def mqttWorker(mqttQ):
 
     while 1:
         try:
-            request = mqttQ.get()
-            requestYaml = request[0]
-            ipAddress = request[1][0]
-            boxName = config.getBoxName(ipAddress)
+            requestYaml = mqttQ.get()
+            boxID = requestYaml['name']
+            boxName = config.getBoxName(boxID)
             mqttMessage = []
 
             for sensor in requestYaml['data']:
                 mqttSensor = {}
-                sensorID = config.getSensors(ipAddress, sensor['type'])
+                sensorID = config.getSensors(boxID, sensor['type'])
                 if sensorID is not None:
                     mqttSensor['sensor'] = sensorID
                     mqttSensor['value'] = sensor['value']

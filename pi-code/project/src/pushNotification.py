@@ -9,10 +9,11 @@ import thresholds
 def pushNotificationWorker(notificationQ):
     while 1:
         try:
-            request = notificationQ.get()
-            ipAddress = request[1][0]
-            boxname = config.getBoxName(ipAddress)
-            request_data = request[0]['data']
+            requestYaml = notificationQ.get()
+            boxID = requestYaml['name']
+            boxname = config.getBoxName(boxID)
+            request_data = requestYaml['data']
+            print request_data
 
             for sensor in request_data:
                 current_value = sensor['value']
