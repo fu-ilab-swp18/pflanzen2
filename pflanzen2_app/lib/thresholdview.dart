@@ -33,20 +33,26 @@ class _ThresholdViewState extends State{
             {
                 'title': 'Temperature',
                 'type': 1,
-                'min': 0.0,
-                'max': 0.0
+                'min': -40.0,
+                'max': -40.0,
+                'scaleMin': -40.0,
+                'scaleMax': 100.0
             },
             {
                 'title': 'Air humidity',
                 'type': 2,
                 'min': 0.0,
-                'max': 0.0
+                'max': 0.0,
+                'scaleMin': 0.0,
+                'scaleMax': 100.0
             },
             {
                 'title': 'Soil humidity',
                 'type': 3,
                 'min': 0.0,
-                'max': 0.0
+                'max': 0.0,
+                'scaleMin': 0.0,
+                'scaleMax': 100.0
             },
         ];
 
@@ -78,8 +84,8 @@ class _ThresholdViewState extends State{
                                         margin: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                                         child: new Slider(
                                             value: sensors[index]['min'],
-                                            min: 0.0,
-                                            max: 100.0,
+                                            min: sensors[index]['scaleMin'],
+                                            max: sensors[index]['scaleMax'],
                                             onChanged: (double val) {
                                                 setState(() {
                                                     sensors[index]['min'] = val;
@@ -94,8 +100,8 @@ class _ThresholdViewState extends State{
                                         margin: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                                         child: new Slider(
                                             value: sensors[index]['max'],
-                                            min: 0.0,
-                                            max: 100.0,
+                                            min: sensors[index]['scaleMin'],
+                                            max: sensors[index]['scaleMax'],
                                             onChanged: (double val) {
                                                 setState(() {
                                                     sensors[index]['max'] = val;

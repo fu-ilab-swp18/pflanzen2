@@ -2,46 +2,47 @@ import socket
 import netifaces as ni
 import Queue as queue
 import yaml
+import time
+import sys
+import paho.mqtt.client as mqtt
+
  
 
-UDP_PORT = 1234
+# UDP_PORT = 1234
+BROKER = 'localhost'
+PORT = 1886
+TOPIC = 'data'
 
 def get_ip_address(ifname):
     addrs = ni.ifaddresses(ifname)
     return addrs[ni.AF_INET6][0]['addr']
 
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+    # client.subscribe(CONFIG_TOPIC)
+    client.subscribe(TOPIC)
+
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+    print(msg)
+    try:
+        yamlData = yaml.load(msg.payload)
+
+        userdata[0].put((yamlData, addr))
+        userdata[1].put((yamlData, addr))
+        
+        # TODO: ack response
+
+    except Exception as e:
+        print e
+        sys.stdout.flush()
+
+
 def radioWorker(mqttQ, notificationQ):
-    # mqttQ.put((yaml.load("""
-    #     msgID:  120936
-    #     data:
-    #         -   type:   1
-    #             value:  54.3
-    #         -   type:   2
-    #             value:  36
-    # """), ["fe80::ff:fe00:30fa%lowpan0"]))
+    client = mqtt.Client(userdata=(mqttQ, notificationQ))
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-    notificationQ.put((yaml.load("""
-        msgID:  120936
-        data:
-            -   type:   1
-                value:  80
-            -   type:   2
-                value:  36
-    """), ["fe80::7b68:2644:3053:30fa%lowpan0"]))
-    
-
-    sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-    sock.bind(('::', UDP_PORT))
-    while True:
-        print "Waiting for messages!"
-        data, addr = sock.recvfrom(1024)
-        try:
-            yamlData = yaml.load(data)
-
-            mqttQ.put((yamlData, addr))
-            notificationQ.put((yamlData, addr))
-            
-            # TODO: ack response
-
-        except:
-            print "Could not parse YAML"
+    client.connect(BROKER, PORT, 60)
+    client.loop_start()

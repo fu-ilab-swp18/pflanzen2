@@ -4,6 +4,7 @@ import time
 import json
 import yaml
 import json
+import sys
 
 import config
 import thresholds
@@ -57,29 +58,40 @@ def publishBoxList(client, payload):
     except Exception as e: print(e)
 
 def mqttWorker(mqttQ):
+    connSuccess = 0
+
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect(BROKER, PORT, 60)
 
-    client.loop_start()
+    while connSuccess == 0:
+        try:
+            client.connect(BROKER, PORT, 60)
+            client.loop_start()
+            connSuccess = 1
+        except Exception as e:
+            connSuccess = 0
+            time.sleep(1)
 
     while 1:
-        request = mqttQ.get()
-        requestYaml = request[0]
-        ipAddress = request[1][0]
-        boxName = config.getBoxName(ipAddress)
-        mqttMessage = []
+        try:
+            request = mqttQ.get()
+            requestYaml = request[0]
+            ipAddress = request[1][0]
+            boxName = config.getBoxName(ipAddress)
+            mqttMessage = []
 
-        for sensor in requestYaml['data']:
-            mqttSensor = {}
-            sensorID = config.getSensors(ipAddress, sensor['type'])
-            if sensorID is not None:
-                mqttSensor['sensor'] = sensorID
-                mqttSensor['value'] = sensor['value']
-                mqttMessage.append(mqttSensor)
+            for sensor in requestYaml['data']:
+                mqttSensor = {}
+                sensorID = config.getSensors(ipAddress, sensor['type'])
+                if sensorID is not None:
+                    mqttSensor['sensor'] = sensorID
+                    mqttSensor['value'] = sensor['value']
+                    mqttMessage.append(mqttSensor)
 
-        mqttString = json.dumps(mqttMessage)
-        print json.dumps(mqttMessage)
-            
-        client.publish(DATA_TOPIC + "/" + boxName, mqttString)
+            mqttString = json.dumps(mqttMessage)
+                
+            client.publish(DATA_TOPIC + "/" + boxName, mqttString)
+        except Exception as e:
+            print e
+            sys.stdout.flush()

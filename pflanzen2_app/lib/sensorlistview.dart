@@ -34,7 +34,26 @@ class _SensorListState extends State{
     }
 
     @override
+    void didChangeDependencies() {
+        MainAppContainer.of(context).firebaseMessaging.configure(
+            onMessage: (Map<String, dynamic> message) {
+                print("onMessage: $message");
+                Scaffold.of(context).showSnackBar(
+                    new SnackBar(
+                        duration: new Duration(seconds: 5),
+                        backgroundColor: Colors.blue,
+                        content: new Text(message['message']),
+                    )
+                );
+            }
+        );
+
+        super.didChangeDependencies();
+    }
+
+    @override
     void initState() {
+        
         super.initState();
     }
 

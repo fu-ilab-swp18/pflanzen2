@@ -1,6 +1,6 @@
 import yaml
 
-yamlfile = open("../thresholds.yml", 'w+')
+yamlfile = open("../thresholds.yml", 'r+')
 boxes = yaml.load(yamlfile)
 
 def get_thresholds(box_name, sensor_type):
