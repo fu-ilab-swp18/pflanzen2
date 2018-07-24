@@ -10,7 +10,7 @@ def pushNotificationWorker(notificationQ):
     while 1:
         try:
             requestYaml = notificationQ.get()
-            boxID = requestYaml['name']
+            boxID = requestYaml['boxID']
             boxname = config.getBoxName(boxID)
             request_data = requestYaml['data']
             print request_data

@@ -76,7 +76,7 @@ def mqttWorker(mqttQ):
     while 1:
         try:
             requestYaml = mqttQ.get()
-            boxID = requestYaml['name']
+            boxID = requestYaml['boxID']
             boxName = config.getBoxName(boxID)
             mqttMessage = []
 
