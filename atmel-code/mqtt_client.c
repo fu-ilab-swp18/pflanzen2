@@ -246,8 +246,7 @@ int cmd_will(int argc, char **argv)
     return 0;
 }
 
-int mqtt_client_init(void)
-{
+int mqtt_client_init(void) {
     /* the main thread needs a msg queue to be able to run `ping6`*/
     msg_init_queue(queue, (sizeof(queue) / sizeof(msg_t)));
 

@@ -100,7 +100,7 @@ int init_rpl_node(char* RLP_NODE_MODE, char* RPL_IFACE_NO) {
     /*  rpl configuration. */ 
 
     if (strcmp(RLP_NODE_MODE, "root") == 0) {
-    
+
         /* Set root IP address */
         char * cmd[] = {"ifconfig", RPL_IFACE_NO, "add","2001:db8::1"};
         _gnrc_netif_config(4, cmd);
