@@ -8,7 +8,7 @@ BOARD ?= samr21-xpro
 PORT ?= /dev/ttyACM3
 
 # This has to be the absolute path to the RIOT base directory:
-RIOTBASE ?= $(CURDIR)/../RIOT
+RIOTBASE ?= $(CURDIR)/../RIOT/
 
 # Don't fail on warnings
 WERROR ?= 0

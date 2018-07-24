@@ -59,8 +59,7 @@ adc_t DFR_LINE;
  */
 char * YAML_MSG_TEMPLATE =
 "\
-name: %s\n\
-msgID: %d\n\
+boxID: %s\n\
 data:\n\
     - type: 1\n\
       value: %s\n\
@@ -197,20 +196,13 @@ int read_dfr(void) {
     return 0;
 }
 
-int mqtt_init_conn(void) {
-   
-   mqtt_client_init();
+int mqtt_conn(void) {
 
     char * mqtt_connect_opt[] = {"con", RPI_ADDR, MQTT_PORT };
 
     printf("Connecting to MQTT broker.. \n");
 
-    if (cmd_con(3, mqtt_connect_opt) == 1) {
-        // conn failed
-        return 1;
-    }
-
-    return 0;
+    return cmd_con(3, mqtt_connect_opt);
 }
 
 int main(void) {
@@ -237,7 +229,11 @@ int main(void) {
 
     /* init mqtt client */
 
-    mqtt_init_conn();
+    mqtt_client_init();
+
+    while(mqtt_conn()) {
+        printf("Trying again..\n");
+    }
 
     /* main loop */
 
@@ -252,13 +248,10 @@ int main(void) {
 
         /* build yaml message */
 
-        // generate message ID
-        uint32_t message_id = random_uint32_range(0, 30000);
-
         char yaml_msg[MAX_MSG_LEN];
 
         // put the values in the template
-        sprintf(yaml_msg, YAML_MSG_TEMPLATE, NODE_NAME, message_id, air_temp_s, air_hum_s, ground_hum_s);
+        sprintf(yaml_msg, YAML_MSG_TEMPLATE, NODE_NAME, air_temp_s, air_hum_s, ground_hum_s);
 
         printf("\n%s\n", yaml_msg);
 
